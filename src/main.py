@@ -12,6 +12,7 @@ class adbOperator:
         self.env = os.environ.copy()
         # print self.env["PATH"]
         self.rootPath = dirname(dirname(__file__))
+        self.phonePath = '/storage/emulated/0/'+str(self.deviceId)
         self.env["PATH"] = os.path.join(
             self.rootPath, 'adb') + ";" + self.env["PATH"]
 
@@ -27,6 +28,12 @@ class adbOperator:
             self.rootPath,'cache', 'test.png')
         print cmd
         subprocess.Popen(cmd, env=self.env, shell=True)
+    def createDir(self):
+        cmd = 'adb -s ' + str(self.deviceId) + \
+            ' shell su -c "mkdir ' +self.phonePath +'"'
+        print cmd
+        subprocess.Popen(cmd, env=self.env, shell=True)
+
 
     def openScanner(self):
         cmd = 'adb -s ' + str(self.deviceId) + \
@@ -34,6 +41,13 @@ class adbOperator:
         print cmd
         subprocess.Popen(cmd, env=self.env, shell=True)
 
+    def pushPic(self,picFile):
+        cmd = 'adb -s ' + str(self.deviceId) + \
+        ' push '+picFile+' '+self.phonePath
+        print cmd
+        subprocess.Popen(cmd, env=self.env, shell=True)
+
+
 
 op = adbOperator(20510497)
-op.screenshot()
+op.pushPic('d:/1.jpg')
