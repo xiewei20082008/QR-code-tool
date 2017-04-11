@@ -28,6 +28,12 @@ class adbOperator:
         print cmd
         subprocess.Popen(cmd, env=self.env, shell=True)
 
+    def openScanner(self):
+        cmd = 'adb -s ' + str(self.deviceId) + \
+        ' shell su -c "am start -n com.tencent.mm/com.tencent.mm.plugin.scanner.ui.BaseScanUI"'
+        print cmd
+        subprocess.Popen(cmd, env=self.env, shell=True)
 
-op = adbOperator(1661505619)
+
+op = adbOperator(20510497)
 op.screenshot()
