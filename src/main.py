@@ -12,7 +12,7 @@ class adbOperator:
         self.env = os.environ.copy()
         # print self.env["PATH"]
         self.rootPath = dirname(dirname(__file__))
-        self.phonePath = '/storage/emulated/0/'+str(self.deviceId)
+        self.phonePath = '/storage/emulated/0/tencent/MicroMsg/WeiXin'
         self.env["PATH"] = os.path.join(
             self.rootPath, 'adb') + ";" + self.env["PATH"]
 
@@ -50,4 +50,4 @@ class adbOperator:
 
 
 op = adbOperator(20510497)
-op.pushPic('d:/1.jpg')
+op.pushPic('d:/microMsg.1491963504562.jpg')
