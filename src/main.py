@@ -1,19 +1,20 @@
 #coding=utf8
 from toolkit import *
+import shutil
 import os
 from time import sleep
 import sys
 import subprocess
+import configuration
 from os.path import dirname
 
 
 class adbOperator:
     def __init__(self, deviceId):
         self.deviceId = deviceId
-        self.dm = reg()
         self.env = os.environ.copy()
         # print self.env["PATH"]
-        self.rootPath = os.path.abspath('..')
+        self.rootPath = getRootPath()
         self.phonePath = '/storage/emulated/0/tencent/MicroMsg/WeiXin'
         self.env["PATH"] = os.path.join(
             self.rootPath, 'adb') + ";" + self.env["PATH"]
@@ -64,7 +65,27 @@ class adbOperator:
         sleep(5.0)
         self.click(353,289) # 点图片缩略图
 
+def scanAllFiles():
+    cfg = configuration.Configuration()
 
-op = adbOperator(20510497)
+    folder = cfg.data['QRcode_path']
+    for name in os.listdir(folder):
+        f =  os.path.join(folder,name)
+        print 'f'
+        print f
+
+        deviceId = cfg.gen_deviceIds.next()
+        print deviceId
+        op = adbOperator(deviceId)
+        op.scanQR(f)
+
+    print 'All files have been scanned.'
+
+    dst = os.path.join(cfg.data['archieve_path'],name)
+    print dst
+    shutil.move(f,dst)
+
+# op = adbOperator(20510497)
 # op.openScanner()
-op.scanQR('d:/1.jpg')
+# op.scanQR('d:/1.jpg')
+scanAllFiles()
