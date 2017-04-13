@@ -1,4 +1,4 @@
-#coding=utf8
+# coding=utf8
 from toolkit import *
 import shutil
 import os
@@ -50,27 +50,28 @@ class adbOperator:
         cmd = 'adb -s ' + str(self.deviceId) + \
             (' shell am broadcast -a '
              'android.intent.action.MEDIA_SCANNER_SCAN_FILE -d file://') + \
-            self.phonePath+'/'+os.path.basename(picFile)
+            self.phonePath + '/' + os.path.basename(picFile)
         print cmd
         subprocess.Popen(cmd, env=self.env, shell=True)
 
-    def scanQR(self,picFile):
+    def scanQR(self, picFile):
         self.pushPic(picFile)
         sleep(1.0)
         self.openScanner()
         sleep(5.0)
-        self.click(674,93) #点三个点
+        self.click(674, 93)  # 点三个点
         sleep(2.0)
-        self.click(477,293) # 点本地图片
+        self.click(477, 293)  # 点本地图片
         sleep(5.0)
-        self.click(353,289) # 点图片缩略图
+        self.click(353, 289)  # 点图片缩略图
+
 
 def scanAllFiles():
     cfg = configuration.Configuration()
 
     folder = cfg.data['QRcode_path']
     for name in os.listdir(folder):
-        f =  os.path.join(folder,name)
+        f = os.path.join(folder, name)
         print 'f'
         print f
 
@@ -79,11 +80,17 @@ def scanAllFiles():
         op = adbOperator(deviceId)
         op.scanQR(f)
 
+        dst = os.path.join(cfg.data['archieve_path'], name)
+        print dst
+        shutil.move(f, dst)
+
+        interval = cfg.gen_random_interval.next()
+        print 'here is'
+        print interval
+        sleep(interval)
+
     print 'All files have been scanned.'
 
-    dst = os.path.join(cfg.data['archieve_path'],name)
-    print dst
-    shutil.move(f,dst)
 
 # op = adbOperator(20510497)
 # op.openScanner()
