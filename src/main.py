@@ -1,5 +1,7 @@
+#coding=utf8
 from toolkit import *
 import os
+from time import sleep
 import sys
 import subprocess
 from os.path import dirname
@@ -36,6 +38,7 @@ class adbOperator:
         cmd = 'adb -s ' + str(self.deviceId) + \
             (' shell su -c "am start -n com.tencent.mm/'
              'com.tencent.mm.plugin.scanner.ui.BaseScanUI"')
+        print cmd
         subprocess.Popen(cmd, env=self.env, shell=True)
 
     def pushPic(self, picFile):
@@ -46,11 +49,22 @@ class adbOperator:
         cmd = 'adb -s ' + str(self.deviceId) + \
             (' shell am broadcast -a '
              'android.intent.action.MEDIA_SCANNER_SCAN_FILE -d file://') + \
-            os.path.join(self.phonePath + os.path.basename(picFile))
+            self.phonePath+'/'+os.path.basename(picFile)
         print cmd
         subprocess.Popen(cmd, env=self.env, shell=True)
+
+    def scanQR(self,picFile):
+        self.pushPic(picFile)
+        sleep(1.0)
+        self.openScanner()
+        sleep(5.0)
+        self.click(674,93) #点三个点
+        sleep(2.0)
+        self.click(477,293) # 点本地图片
+        sleep(5.0)
+        self.click(353,289) # 点图片缩略图
 
 
 op = adbOperator(20510497)
 # op.openScanner()
-op.pushPic('d:/1.jpg')
+op.scanQR('d:/1.jpg')
