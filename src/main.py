@@ -1,19 +1,20 @@
-#coding=utf8
+# coding=utf8
 from toolkit import *
+import shutil
 import os
 from time import sleep
 import sys
 import subprocess
+import configuration
 from os.path import dirname
 
 
 class adbOperator:
     def __init__(self, deviceId):
         self.deviceId = deviceId
-        self.dm = reg()
         self.env = os.environ.copy()
         # print self.env["PATH"]
-        self.rootPath = os.path.abspath('..')
+        self.rootPath = getRootPath()
         self.phonePath = '/storage/emulated/0/tencent/MicroMsg/WeiXin'
         self.env["PATH"] = os.path.join(
             self.rootPath, 'adb') + ";" + self.env["PATH"]
@@ -49,22 +50,49 @@ class adbOperator:
         cmd = 'adb -s ' + str(self.deviceId) + \
             (' shell am broadcast -a '
              'android.intent.action.MEDIA_SCANNER_SCAN_FILE -d file://') + \
-            self.phonePath+'/'+os.path.basename(picFile)
+            self.phonePath + '/' + os.path.basename(picFile)
         print cmd
         subprocess.Popen(cmd, env=self.env, shell=True)
 
-    def scanQR(self,picFile):
+    def scanQR(self, picFile):
         self.pushPic(picFile)
         sleep(1.0)
         self.openScanner()
         sleep(5.0)
-        self.click(674,93) #点三个点
+        self.click(674, 93)  # 点三个点
         sleep(2.0)
-        self.click(477,293) # 点本地图片
+        self.click(477, 293)  # 点本地图片
         sleep(5.0)
-        self.click(353,289) # 点图片缩略图
+        self.click(353, 289)  # 点图片缩略图
 
 
-op = adbOperator(20510497)
+def scanAllFiles():
+    cfg = configuration.Configuration()
+
+    folder = cfg.data['QRcode_path']
+    for name in os.listdir(folder):
+        f = os.path.join(folder, name)
+        print 'f'
+        print f
+
+        deviceId = cfg.gen_deviceIds.next()
+        print deviceId
+        op = adbOperator(deviceId)
+        op.scanQR(f)
+
+        dst = os.path.join(cfg.data['archieve_path'], name)
+        print dst
+        shutil.move(f, dst)
+
+        interval = cfg.gen_random_interval.next()
+        print 'here is'
+        print interval
+        sleep(interval)
+
+    print 'All files have been scanned.'
+
+
+# op = adbOperator(20510497)
 # op.openScanner()
-op.scanQR('d:/1.jpg')
+# op.scanQR('d:/1.jpg')
+scanAllFiles()
