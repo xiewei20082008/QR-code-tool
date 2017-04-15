@@ -103,7 +103,7 @@ def scanAllFiles():
         print 'f'
         print f
 
-        deviceId = cfg.gen_deviceIds.next()
+        deviceId = cfg.getNextDeviceID()
         print deviceId
         op = adbOperator(deviceId)
         try:
@@ -114,7 +114,7 @@ def scanAllFiles():
         except SubErr:
             print 'scan error!'
 
-        interval = cfg.gen_random_interval.next()
+        interval = cfg.getNextRandomInterval()
         print 'interval is'
         print interval
         sleep(interval)
