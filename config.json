@@ -1,7 +1,7 @@
 {
   "QRcode_path":"d:/QRcode",
   "archieve_path":"d:/archieve",
-  "deviceIds":["20510497"],
+  "deviceIds":["20510497","123123","234234"],
   "scan_waittime_min":1,
   "scan_waittime_max":10
 }

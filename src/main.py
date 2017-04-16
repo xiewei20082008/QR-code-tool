@@ -4,6 +4,7 @@ import shutil
 import os
 from time import sleep
 import sys
+import threading
 import subprocess32 as subprocess
 import configuration
 from subprocess32 import PIPE
@@ -16,7 +17,7 @@ class adbOperator:
         self.env = os.environ.copy()
         # print self.env["PATH"]
         self.rootPath = getRootPath()
-        self.phonePath = '/storage/emulated/0/tencent/MicroMsg/WeiXin'
+        self.phonePath = '/storage/emulated/0/Pictures/Screenshots'
         self.env["PATH"] = os.path.join(
             self.rootPath, 'adb') + ";" + self.env["PATH"]
 
@@ -94,38 +95,44 @@ class adbOperator:
             raise
 
 
-def scanAllFiles():
-    cfg = configuration.Configuration()
-
-    folder = cfg.data['QRcode_path']
-    for name in os.listdir(folder):
-        f = os.path.join(folder, name)
-        print 'f'
-        print f
-
-        deviceId = cfg.getNextDeviceID()
-        print deviceId
+def deviceThread(deviceId, cfg):
+    while True:
+        print '%s start scan' % deviceId
         op = adbOperator(deviceId)
         try:
+            f = cfg.getNextFilePath()
+            print f
+        except StopIteration:
+            print 'end thread'
+            break
+        try:
             op.scanQR(f)
-            dst = os.path.join(cfg.data['archieve_path'], name)
+        except SubErr as e:
+            print 'scan error in subprocess!'
+        else:
+            dst = os.path.join(cfg.data['archieve_path'], os.path.basename(f))
             print dst
             shutil.move(f, dst)
-        except SubErr:
-            print 'scan error!'
 
-        interval = cfg.getNextRandomInterval()
+        interval = cfg.random_interval()
         print 'interval is'
         print interval
         sleep(interval)
 
-    print 'All files have been scanned.'
+
+def scanAllFiles():
+    cfg = configuration.Configuration()
+
+    for i in cfg.data['deviceIds']:
+        t = threading.Thread(target=deviceThread, args=(i, cfg))
+        t.start()
+    # sleep(100)
 
 
-op = adbOperator(20510497)
-try:
-    op.openScanner()
-except SubErr as e:
-    print e
+# op = adbOperator(20510497)
+# try:
+#     op.openScanner()
+# except SubErr as e:
+#     print e
 # op.scanQR('d:/1.jpg')
-# scanAllFiles()
+scanAllFiles()

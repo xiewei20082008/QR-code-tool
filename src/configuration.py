@@ -32,9 +32,14 @@ class Configuration:
 
     def getNextFilePath(self):
         self.lock_nextFilePath.acquire()
-        v = self.gen_nextFilePath.next()
-        self.lock_nextFilePath.release()
-        return v
+        try:
+            v = self.gen_nextFilePath.next()
+        except Exception:
+            self.lock_nextFilePath.release()
+            raise
+        else:
+            self.lock_nextFilePath.release()
+            return v
 
 
 if __name__ == '__main__':
