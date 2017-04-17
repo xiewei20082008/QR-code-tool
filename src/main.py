@@ -67,6 +67,16 @@ class adbOperator:
 
         self._text(parts[-1])
 
+    def autoDelegate(self, stockId, price, mount):
+        self.click(180, 400)
+        self.text(stockId)
+        self.click(475, 544)
+        sleep(1)
+        self.longClick(413, 551)  # 点击价格
+        self.text(price)
+        self.click(403, 736)
+        self.text(mount)
+
     def screenshot(self):
         cmd = 'adb -s ' + str(self.deviceId) + \
             ' exec-out screencap -p > ' + os.path.join(
@@ -167,6 +177,7 @@ def scanAllFiles():
 
 
 op = adbOperator(1661505619)
+op.autoDelegate('000810', '12.65', '600')
 
 # op = adbOperator(20510497)
 # try:
