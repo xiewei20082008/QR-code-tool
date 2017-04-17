@@ -21,6 +21,23 @@ class adbOperator:
         self.env["PATH"] = os.path.join(
             self.rootPath, 'adb') + ";" + self.env["PATH"]
 
+    def adbcmd(self, cmd):
+        p = subprocess.Popen(cmd, stderr=PIPE, env=self.env, shell=True)
+        try:
+            waitSubprocess(p)
+        except "suberr":
+            raise
+
+    def longClick(self, x, y):
+        cmd = 'adb -s ' + str(self.deviceId) + \
+            ' shell input swipe ' + \
+            '%s %s %s %s 1000' % (str(x), str(y), str(x), str(y))
+        p = subprocess.Popen(cmd, stderr=PIPE, env=self.env, shell=True)
+        try:
+            waitSubprocess(p)
+        except "suberr":
+            raise
+
     def click(self, x, y):
         cmd = 'adb -s ' + str(self.deviceId) + \
             ' shell input tap ' + str(x) + ' ' + str(y)
@@ -29,6 +46,26 @@ class adbOperator:
             waitSubprocess(p)
         except "suberr":
             raise
+
+    def _text(self, s):
+        cmd = 'adb -s ' + str(self.deviceId) + \
+            ' shell input keyboard text ' + s
+        print cmd
+
+        p = subprocess.Popen(cmd, stderr=PIPE, env=self.env, shell=True)
+        try:
+            waitSubprocess(p)
+        except "suberr":
+            raise
+
+    def text(self, s):
+        parts = s.split('.')
+        for i in parts[:-1]:
+            self._text(i)
+
+            self.click(180, 1828)
+
+        self._text(parts[-1])
 
     def screenshot(self):
         cmd = 'adb -s ' + str(self.deviceId) + \
@@ -129,10 +166,12 @@ def scanAllFiles():
     # sleep(100)
 
 
+op = adbOperator(1661505619)
+
 # op = adbOperator(20510497)
 # try:
 #     op.openScanner()
 # except SubErr as e:
 #     print e
 # op.scanQR('d:/1.jpg')
-scanAllFiles()
+# scanAllFiles()
